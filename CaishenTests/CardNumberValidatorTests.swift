@@ -60,7 +60,7 @@ class CardNumberValidatorTests: XCTestCase {
         "4916351782925806","4576172713882929","4024007180061854",
         "4539002606626214","4024007120480776","4532725602167752",
         "4532075300709459","4716793955224230","4556481214195861",
-        "4556485551226429"
+        "4556485551226429","4222222222222"
     ]
     
     override func setUp() {
@@ -112,7 +112,7 @@ class CardNumberValidatorTests: XCTestCase {
     }
     
     func testValidateCardLength() {
-        let tooShortVisa = "411111111111111"
+        let tooShortVisa = "411111111111"
         let tooShortAmex = "37828224631000"
         let tooShortDiners = "3056930902590"
         let tooShortDiscover = "601111111111111"
@@ -120,7 +120,7 @@ class CardNumberValidatorTests: XCTestCase {
         let tooShortMasterCard = "555555555555444"
         let tooShortChinaUnionPay = "628126366607177"
         
-        let tooLongVisa = "41111111111111111"
+        let tooLongVisa = "411111111111111111"
         let tooLongAmex = "3782822463100000"
         let tooLongDiners = "305693090259000"
         let tooLongDiscover = "60111111111111111"

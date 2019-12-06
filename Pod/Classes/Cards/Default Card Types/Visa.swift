@@ -16,7 +16,9 @@ public struct Visa: CardType {
     public let name = "Visa"
     
     public let CVCLength = 3
-    
+  
+    public let numberGrouping: [[Int]] = [[4, 4, 5], [4, 4, 4, 2], [4, 4, 4, 3], [4, 4, 4, 4]]
+  
     public let identifyingDigits = Set([4])
 
     public init() {

@@ -29,7 +29,7 @@ public protocol CardType {
      0000-0000-0000-0000.
      - returns: The grouping of digits in the card number.
      */
-    var numberGrouping: [Int] { get }
+    var numberGrouping: [[Int]] { get }
     
     /**
      Card types are typically identified by their first n digits. In compliance to ISO/IEC 7812, the first digit is the *Major industry identifier*, which is equal to:
@@ -119,14 +119,23 @@ extension CardType {
         return true
     }
 
-    public var numberGrouping: [Int] {
-        return [4, 4, 4, 4]
+    public var numberGrouping: [[Int]] {
+        return [[4, 4, 4, 4]]
     }
 
     public var maxLength: Int {
-        return numberGrouping.reduce(0) { $0 + $1 }
+      return numberGrouping.compactMap({ $0.reduce(0) { $0 + $1 } }).max() ?? 0
     }
-
+  
+    public func numberGrouping(for lenght: Int) -> [Int] {
+      guard lenght <= maxLength else { return [4, 4, 4, 4] }
+      
+      let indexes = numberGrouping.compactMap({ abs(lenght - ($0.reduce(0) { $0 + $1 }) )})
+      guard let bestIndex = indexes.firstIndex(where: { $0 == indexes.min() }) else { return [4, 4, 4, 4] }
+      
+      return numberGrouping[bestIndex]
+    }
+  
     public func validate(cvc: CVC) -> CardValidationResult {
 
         guard requiresCVC else {
@@ -176,8 +185,8 @@ extension CardType {
      
      - returns: The number of digits that are contained in a card number of card type `self`.
      */
-    public func expectedCardNumberLength() -> Int {
-        return numberGrouping.reduce(0, {$0 + $1})
+    public func expectedCardNumberLengths() -> [Int] {
+      return numberGrouping.map({ $0.reduce(0, {$0 + $1}) })
     }
 
     /**
@@ -247,10 +256,10 @@ extension CardType {
      
      - returns: CardValidationResult.Valid if the lengths match, CardValidationResult.NumberDoesNotMatchType otherwise.
      */
-    private func testLength(_ actualLength: Int, assumingLength expectedLength: Int) -> CardValidationResult {
-        if actualLength == expectedLength {
+    private func testLength(_ actualLength: Int, assumingLength expectedLengths: [Int]) -> CardValidationResult {
+        if expectedLengths.contains(actualLength) {
             return .Valid
-        } else if actualLength < expectedLength {
+        } else if actualLength < expectedLengths.min() ?? 0 {
             return .NumberIncomplete
         } else if actualLength > maxLength {
             return .NumberTooLong
@@ -270,7 +279,7 @@ extension CardType {
         - `.NumberDoesNotMatchType`:    The card number's Issuer Identification Number does not match `self`
      */
     public func lengthMatchesType(_ length: Int) -> CardValidationResult {
-        return testLength(length, assumingLength: expectedCardNumberLength())
+        return testLength(length, assumingLength: expectedCardNumberLengths())
     }
 
     /**

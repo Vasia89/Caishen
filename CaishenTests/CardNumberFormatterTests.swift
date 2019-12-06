@@ -33,6 +33,13 @@ class CardNumberFormatterTests: XCTestCase {
         
         XCTAssertEqual(formattedTestNumber, "4123-1234-1234-1234")
     }
+  
+    func testCorrectSeparator1() {
+        let testNumber = Number(rawValue: "4222222222222")
+        let formattedTestNumber = self.formatter.format(cardNumber: testNumber.description)
+        
+        XCTAssertEqual(formattedTestNumber, "4222-2222-22222")
+    }
     
     func testPerformanceExample() {
         // This is an example of a performance test case.
